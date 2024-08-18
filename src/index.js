@@ -1,6 +1,7 @@
 require('dotenv').config();
 
 const { Client, IntentsBitField } = require('discord.js');
+const eventHandler = require('./handlers/eventHandler');
 
 const client = new Client({
     intents: [
@@ -11,9 +12,7 @@ const client = new Client({
     ],
 });
 
-client.on('ready', (c) => {
-    console.log(`${c.user.username} is online.`);
-});
+eventHandler(client);
 
 // checks user command and executes accordingly
 client.on('interactionCreate', (interaction) => {
@@ -25,14 +24,6 @@ client.on('interactionCreate', (interaction) => {
         interaction.reply('hey');
     }
 
-
 })
-
-client.on('message', (message) => {
-    let args = message.content.slice(prefix.length).split(' ');
-    let cmd = args.shift().toLowerCase();
-})
-
-
 
 client.login(process.env.TOKEN);
