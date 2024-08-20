@@ -1,13 +1,16 @@
-const { testServer } = require('../../../config.json');
+//const { testServer } = require('../../../config.json');
 const areCommandsDifferent = require('../../utils/areCommandsDifferent');
 const getApplicationCommands = require('../../utils/getApplicationCommands');
 const getLocalCommands = require('../../utils/getLocalCommands');
+const { REST, Routes } = require('discord.js');
+
+const rest = new REST().setToken(process.env.TOKEN);
 
 module.exports = async (client) => {
 
     try {
         const localCommands = getLocalCommands();
-        const applicationCommands = await getApplicationCommands(client, testServer);
+        const applicationCommands = await getApplicationCommands(client);
 
         for (const localCommand of localCommands) {
             const { name, description, options } = localCommand;
@@ -46,6 +49,11 @@ module.exports = async (client) => {
                     description,
                     options,
                 });
+
+                await rest.put(
+                    Routes.applicationCommands(clientId),
+                    { body: commands },
+                );
 
                 console.log(`Registered command "${name}".`);
                 
