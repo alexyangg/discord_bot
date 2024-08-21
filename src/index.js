@@ -2,6 +2,7 @@ require('dotenv').config();
 
 const { Client, IntentsBitField } = require('discord.js');
 const eventHandler = require('./handlers/eventHandler');
+const mongoose = require('mongoose');
 
 const client = new Client({
     intents: [
@@ -12,18 +13,15 @@ const client = new Client({
     ],
 });
 
-eventHandler(client);
-
-// checks user command and executes accordingly
-client.on('interactionCreate', (interaction) => {
-    if (!interaction.isChatInputCommand()) {
-        return;
+(async () => {
+    try {
+        await mongoose.connect(process.env.MONGODB_URI);
+        console.log("Connected to DB.");
+    
+        eventHandler(client);
+        
+        client.login(process.env.TOKEN);
+    } catch (error) {
+        console.log(`Error: ${error}`);
     }
-
-    if (interaction.commandName === 'hey') {
-        interaction.reply('hey');
-    }
-
-})
-
-client.login(process.env.TOKEN);
+})();
