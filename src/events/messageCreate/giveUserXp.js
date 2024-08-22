@@ -1,5 +1,5 @@
 const { Client, Message } = require('discord.js'); // Enable IntelliSense
-const Level = require('../../models/level');
+const Level = require('../../models/Level');
 const calculateLevelXp = require('../../utils/calculateLevelXp');
 const cooldowns = new Set();
 

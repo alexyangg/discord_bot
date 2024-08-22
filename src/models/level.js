@@ -19,4 +19,4 @@ const levelSchema = new Schema({
     },
 });
 
-module.exports = model('level', levelSchema);
+module.exports = model('Level', levelSchema);
