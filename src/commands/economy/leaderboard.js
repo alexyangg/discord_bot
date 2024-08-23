@@ -2,6 +2,7 @@ const { Client, Interaction, ApplicationCommandOptionType, AttachmentBuilder, Em
 const { Font, LeaderboardBuilder } = require('canvacord');
 const Level = require("../../models/Level");
 const path = require('path');
+const getOnlineMembers = require("../../utils/getOnlineMembers");
 
 module.exports = {
     /**
@@ -28,6 +29,7 @@ module.exports = {
         const userGuildName = interaction.member.guild.name;
         const guildImage = interaction.member.guild.iconURL({ extension: 'png', size: 256 }) || transparentImage;
         const guildNumMembers = interaction.guild.memberCount
+        const onlineMembers = await getOnlineMembers.callback(client, interaction.guild);
 
         const topUsers = await Level.find({ guildId: interaction.guild.id })
             .select('-_id userId level xp')
@@ -62,7 +64,7 @@ module.exports = {
             let lbEmbed = new EmbedBuilder()
                 .setTitle(`**${userGuildName} Level Leaderboard**`)
                 .setColor('#ffffff')
-                .setFooter({ text: `${guildNumMembers} members` });
+                .setFooter({ text: `${guildNumMembers} members | ${onlineMembers} online` });
 
             let desc = "";
 
