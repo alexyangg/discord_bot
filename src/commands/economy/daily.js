@@ -1,4 +1,4 @@
-const { Client, Interaction } = require('discord.js');
+const { Client, Interaction, EmbedBuilder } = require('discord.js');
 const User = require('../../models/User');
 
 const dailyAmount = 1000;
@@ -30,13 +30,16 @@ module.exports = {
             };
 
             let user = await User.findOne(query);
+            let embed = new EmbedBuilder()
+                .setColor('#ffffff');
 
             if (user) {
                 const lastDailyDate = user.lastDaily.toDateString();
                 const currentDate = new Date().toDateString();
 
                 if (lastDailyDate === currentDate) {
-                    interaction.editReply("You have already collected your dailies today. Come back tomorrow!");
+                    embed.setDescription("You have already collected your dailies today. Come back tomorrow!");
+                    interaction.editReply({ embeds: [embed] });
                     return;
                 }
                 user.lastDaily = new Date();
@@ -50,7 +53,8 @@ module.exports = {
             user.balance += dailyAmount;
             await user.save(); // save to database
 
-            interaction.editReply(`${dailyAmount} was added to your balance. Your new balance is ${user.balance}.`)
+            embed.setDescription(`${dailyAmount} was added to your balance. Your new balance is ${user.balance}.`);
+            interaction.editReply({ embeds: [embed] });
         } catch (error) {
             console.log(`Error with /daily: ${error}`);
         }
