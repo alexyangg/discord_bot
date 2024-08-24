@@ -97,14 +97,20 @@ module.exports = {
 
         collector.on('collect', i => {
             if (i.user.id === interaction.user.id) {
-                if (i.customId === 'first') {
-                    currentPage = 0;
-                } else if (i.customId === 'previous') {
-                    currentPage = Math.max(currentPage - 1, 0);
-                } else if (i.customId === 'next') {
-                    currentPage = Math.min(currentPage + 1, pages.length - 1);
-                } else if (i.customId === 'last') {
-                    currentPage = pages.length - 1;
+
+                switch (i.customId) {
+                    case 'first':
+                        currentPage = 0;
+                        break;
+                    case 'previous':
+                        currentPage = Math.max(currentPage - 1, 0);
+                        break;
+                    case 'next':
+                        currentPage = Math.min(currentPage + 1, pages.length - 1);
+                        break;
+                    case 'last':
+                        currentPage = pages.length - 1;
+                        break;
                 }
 
                 i.update({
