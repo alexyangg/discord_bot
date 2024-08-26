@@ -1,5 +1,6 @@
 const { Client, Interaction, ApplicationCommandOptionType, EmbedBuilder } = require('discord.js');
-const User = require('../../models/User');
+const path = require('path');
+const User = require(path.resolve(__dirname, '../../models/User'));
 
 module.exports = {
     name: 'balance',

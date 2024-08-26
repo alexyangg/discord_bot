@@ -1,8 +1,8 @@
 const { Client, Interaction, ApplicationCommandOptionType, AttachmentBuilder, EmbedBuilder, } = require("discord.js");
 const { Font, LeaderboardBuilder } = require('canvacord');
-const Level = require("../../models/Level");
 const path = require('path');
-const getOnlineMembers = require("../../utils/getOnlineMembers");
+const Level = require(path.resolve(__dirname, '../../models/Level'));
+const getOnlineMembers = require(path.resolve(__dirname, "../../utils/getOnlineMembers"));
 
 module.exports = {
     /**

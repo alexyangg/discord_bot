@@ -1,6 +1,7 @@
 const { Client, Message } = require('discord.js'); // Enable IntelliSense
-const Level = require('../../models/Level');
-const calculateLevelXp = require('../../utils/calculateLevelXp');
+const path = require('path');
+const Level = require(path.resolve(__dirname, '../../models/Level'));
+const calculateLevelXp = require(path.resolve(__dirname, '../../utils/calculateLevelXp'));
 const cooldowns = new Set();
 
 function getRandomXp(min, max) {

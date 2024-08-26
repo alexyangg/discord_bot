@@ -1,5 +1,5 @@
 const path = require('path');
-const getAllFiles = require("../utils/getAllFiles");
+const getAllFiles = require(path.resolve(__dirname, "../utils/getAllFiles"));
 
 module.exports = (client) => {
     const eventFolders = getAllFiles(path.join(__dirname, '..', 'events'), true);

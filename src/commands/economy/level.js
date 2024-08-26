@@ -1,9 +1,9 @@
 const { Client, Interaction, ApplicationCommandOptionType, AttachmentBuilder } = require("discord.js");
-const Level = require("../../models/Level");
-const calculateLevelXp = require('../../utils/calculateLevelXp');
+const path = require('path');
+const Level = require(path.resolve(__dirname, '../../models/Level'));
+const calculateLevelXp = require(path.resolve(__dirname, '../../utils/calculateLevelXp'));
 const canvacord = require('canvacord');
 const { Font, RankCardBuilder } = require('canvacord');
-const path = require('path');
 
 module.exports = {
     /**

@@ -1,7 +1,8 @@
 //const { testServer } = require('../../../config.json');
-const areCommandsDifferent = require('../../utils/areCommandsDifferent');
-const getApplicationCommands = require('../../utils/getApplicationCommands');
-const getLocalCommands = require('../../utils/getLocalCommands');
+const path = require('path');
+const areCommandsDifferent = require(path.resolve(__dirname, '../../utils/areCommandsDifferent'));
+const getApplicationCommands = require(path.resolve(__dirname, '../../utils/getApplicationCommands'));
+const getLocalCommands = require(path.resolve(__dirname, '../../utils/getLocalCommands'));
 const { REST, Routes } = require('discord.js');
 
 const rest = new REST().setToken(process.env.TOKEN);

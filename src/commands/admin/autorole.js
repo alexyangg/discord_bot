@@ -1,6 +1,6 @@
 const { Client, Interaction, PermissionFlagsBits, ApplicationCommandOptionType } = require('discord.js');
-const AutoRole = require('../../models/AutoRole');
-
+const path = require('path');
+const AutoRole = require(path.resolve(__dirname, '../../models/AutoRole'));
 module.exports = {
     name: 'autorole',
     description: 'Autorole related commands.',
