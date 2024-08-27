@@ -1,6 +1,7 @@
 const { Client, Message } = require('discord.js'); // Enable IntelliSense
 const path = require('path');
 const Level = require(path.resolve(__dirname, '../../models/Level'));
+const GuildSettings = require('../../models/GuildSettings');
 const calculateLevelXp = require(path.resolve(__dirname, '../../utils/calculateLevelXp'));
 const cooldowns = new Set();
 
@@ -30,6 +31,8 @@ module.exports = async (client, message) => {
 
     try {
         const level = await Level.findOne(query);
+        const settings = await GuildSettings.findOne({ guildId: message.guild.id });
+        const levelUpMessageEnabled = settings.levelUpMessageEnabled;
 
         // User has a level saved in database
         if (level) {
@@ -40,7 +43,9 @@ module.exports = async (client, message) => {
                 level.xp = 0;
                 level.level += 1;
 
-                message.channel.send(`${message.member} you have leveled up to **level ${level.level}**!`);
+                if (levelUpMessageEnabled) {
+                    message.channel.send(`${message.member} you have leveled up to **level ${level.level}**!`);
+                }
             }
 
             await level.save().catch((e) => {
