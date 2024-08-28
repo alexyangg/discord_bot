@@ -32,7 +32,7 @@ module.exports = async (client, message) => {
     try {
         const level = await Level.findOne(query);
         const settings = await GuildSettings.findOne({ guildId: message.guild.id });
-        const levelUpMessageEnabled = settings.levelUpMessageEnabled;
+        const levelUpMessageEnabled = settings?.levelUpMessageEnabled || true;
 
         // User has a level saved in database
         if (level) {
