@@ -3,7 +3,7 @@ const axios = require('axios');
 
 module.exports = {
     name: 'dog',
-    description: 'Sends a random image of a dog.',
+    description: 'Sends a random image of a dog!',
 
     /**
      * 
