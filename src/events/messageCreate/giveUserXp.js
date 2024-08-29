@@ -22,8 +22,6 @@ module.exports = async (client, message) => {
         return;
     }
 
-    const xpToGive = getRandomXp(5, 15);
-
     const query = {
         userId: message.author.id,
         guildId: message.guild.id,
@@ -33,6 +31,10 @@ module.exports = async (client, message) => {
         const level = await Level.findOne(query);
         const settings = await GuildSettings.findOne({ guildId: message.guild.id });
         const levelUpMessageEnabled = settings?.levelUpMessageEnabled || true;
+        const minXpAmount = settings.minXpAmount;
+        const maxXpAmount = settings.maxXpAmount;
+
+        const xpToGive = getRandomXp(minXpAmount, maxXpAmount);
 
         // User has a level saved in database
         if (level) {
