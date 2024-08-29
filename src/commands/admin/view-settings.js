@@ -61,8 +61,9 @@ module.exports = {
             const maxXpAmount = guildSettings.maxXpAmount;
             const xpCooldown = guildSettings.xpCooldown;
 
+            const userGuildName = interaction.member.guild.name;
             const embed = new EmbedBuilder()
-                .setTitle('**Current Server Settings**')
+                .setTitle(`**${userGuildName} Server Settings**`)
                 .setColor('#ffffff');
 
             const desc = `
