@@ -172,6 +172,21 @@ module.exports = {
                         xpCooldown = previousXpCooldown;
                     }
 
+                    if (minXp < 0) {
+                        interaction.reply('Error updating settings: minimum-xp must be an integer greater than 0.');
+                        return;
+                    }
+
+                    if (maxXp < 0) {
+                        interaction.reply('Error updating settings: maximum-xp must be an integer greater than 0.');
+                        return;
+                    }
+
+                    if (xpCooldown < 0) {
+                        interaction.reply('Error updating settings: xp-cooldown must be an integer greater than 0.');
+                        return;
+                    }
+
                     await settings.save();
                     interaction.reply(`XP settings updated:\nMin XP: ${previousMinXp} XP => **${minXp}** XP\nMax XP: ${previousMaxXp} XP => **${maxXp}** XP\nCooldown: ${previousXpCooldown}ms => **${xpCooldown}**ms`);
 

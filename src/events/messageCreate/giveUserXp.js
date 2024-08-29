@@ -31,9 +31,9 @@ module.exports = async (client, message) => {
         const level = await Level.findOne(query);
         const settings = await GuildSettings.findOne({ guildId: message.guild.id });
         const levelUpMessageEnabled = settings?.levelUpMessageEnabled || true;
-        const minXpAmount = settings.minXpAmount;
-        const maxXpAmount = settings.maxXpAmount;
-        const xpCooldown = settings.xpCooldown;
+        const minXpAmount = settings?.minXpAmount || 5;
+        const maxXpAmount = settings?.maxXpAmount || 15;
+        const xpCooldown = settings?.xpCooldown || 5000;
 
         const xpToGive = getRandomXp(minXpAmount, maxXpAmount);
 
