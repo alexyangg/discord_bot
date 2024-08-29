@@ -72,6 +72,13 @@ module.exports = {
                     const customMessage = interaction.options.getString('custom-message');
                     await interaction.deferReply();
 
+                    const existingWelcomeChannel = await WelcomeChannel.findOne({ guildId });
+
+                    if (existingWelcomeChannel) {
+                        interaction.followUp(`A welcome channel is already configured for this server: <#${existingWelcomeChannel.channelId}>. To change channels, first run \`/disable welcome\` and then \`/configure welcome\`.`);
+                        return;
+                    }
+
                     const query = {
                         guildId: interaction.guildId,
                         channelId: targetChannel.id,
@@ -80,7 +87,7 @@ module.exports = {
                     const channelExistsInDb = await WelcomeChannel.exists(query);
 
                     if (channelExistsInDb) {
-                        interaction.followUp(`This channel has already been configured for welcome messages. To change the welcome message, run \`/disable welcome\` and \`/setup welcome\`.`);
+                        interaction.followUp(`This channel has already been configured for welcome messages. To change the welcome message, first run \`/disable welcome\` and then \`/configure welcome\`.`);
                         return;
                     }
 
