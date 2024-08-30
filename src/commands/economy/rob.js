@@ -23,7 +23,7 @@ module.exports = {
     callback: async (client, interaction) => {
         const robberId = interaction.user.id;
         const targetId = interaction.options.getUser('target-user').id;
-        const cooldownDuration = 3600000;
+        const cooldownDuration = 10;
         const successRate = 0.5; // 50% success chance
         const penaltyRate = 0.2; // 20% of robber's balance lost if rob fails
         const amountToRob = 0.2; // 20% of target's balance lost if rob succeeds
@@ -83,8 +83,7 @@ module.exports = {
                 await robber.save();
 
                 embed.setTitle('Robbery Successful!')
-                    .setDescription(`You successfully robbed **${stolenAmount} coins** from ${interaction.options.getUser('target-user').username}!`)
-                    .setFooter({ text: `Your new balance is **${robber.balance} coins**.` });
+                    .setDescription(`You successfully robbed **${stolenAmount} coins** from ${interaction.options.getUser('target-user')}!\n\nYour new balance is **${robber.balance} coins**.`);
 
                 interaction.editReply({ embeds: [embed] });
             } else {
@@ -95,8 +94,7 @@ module.exports = {
                 await robber.save();
 
                 embed.setTitle('Robbery Failed...')
-                    .setDescription(`You were caught! You lost **${penalty} coins** as a penalty.`)
-                    .setFooter({ text: `Your new balance is **${robber.balance} coins**.` });
+                    .setDescription(`You were caught! You lost **${penalty} coins** as a penalty.\n\nYour new balance is **${robber.balance} coins**.`);
 
                 interaction.editReply({ embeds: [embed] });
             }

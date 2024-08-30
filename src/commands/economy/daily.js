@@ -54,7 +54,7 @@ module.exports = {
             user.balance += dailyAmount;
             await user.save(); // save to database
 
-            embed.setDescription(`${dailyAmount} was added to your balance. Your new balance is ${user.balance}.`);
+            embed.setDescription(`**${dailyAmount} coins** was added to your balance. Your new balance is **${user.balance} coins**.`);
             interaction.editReply({ embeds: [embed] });
         } catch (error) {
             console.log(`Error with /daily: ${error}`);
