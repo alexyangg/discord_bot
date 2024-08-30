@@ -15,12 +15,14 @@ const userSchema = new Schema({
   },
   lastDaily: {
     type: Date,
-    required: true,
     default: null,
   },
   lastWork: {
     type: Date,
-    required: true,
+    default: null,
+  },
+  lastRob: {
+    type: Date,
     default: null,
   },
 });
