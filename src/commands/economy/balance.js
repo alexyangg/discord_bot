@@ -4,7 +4,7 @@ const User = require(path.resolve(__dirname, '../../models/User'));
 
 module.exports = {
     name: 'balance',
-    description: "View your or someone else's balance",
+    description: "View your or someone else's balance.",
     options: [
         {
             name: 'user',
