@@ -47,9 +47,9 @@ module.exports = {
 
         // check if targetUser is the one calling the command
         if (targetUserId === interaction.member.id) {
-            embed.setDescription(`Your balance is **${user.balance}**.`);
+            embed.setDescription(`Your balance is **${user.balance} coins**.`);
         } else {
-            embed.setDescription(`<@${targetUserId}>'s balance is **${user.balance}**.`);
+            embed.setDescription(`<@${targetUserId}>'s balance is **${user.balance} coins**.`);
         }
 
         interaction.editReply({ embeds: [embed] });

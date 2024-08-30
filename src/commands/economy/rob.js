@@ -56,7 +56,7 @@ module.exports = {
             }
 
             if (target.balance < minBalanceToRob) {
-                embed.setDescription(`The target user must have at least ${minBalanceToRob} currency to be robbed.`);
+                embed.setDescription(`The target user must have at least ${minBalanceToRob} coins to be robbed.`);
                 interaction.editReply({ embeds: [embed] });
                 return;
             }
@@ -83,8 +83,8 @@ module.exports = {
                 await robber.save();
 
                 embed.setTitle('Robbery Successful!')
-                    .setDescription(`You successfully robbed ${stolenAmount} currency from ${interaction.options.getUser('target-user').username}!`)
-                    .setFooter({ text: `Your new balance is ${robber.balance} currency.` });
+                    .setDescription(`You successfully robbed **${stolenAmount} coins** from ${interaction.options.getUser('target-user').username}!`)
+                    .setFooter({ text: `Your new balance is **${robber.balance} coins**.` });
 
                 interaction.editReply({ embeds: [embed] });
             } else {
@@ -95,8 +95,8 @@ module.exports = {
                 await robber.save();
 
                 embed.setTitle('Robbery Failed...')
-                    .setDescription(`You were caught! You lost ${penalty} currency as a penalty.`)
-                    .setFooter({ text: `Your new balance is ${robber.balance} currency.` });
+                    .setDescription(`You were caught! You lost **${penalty} coins** as a penalty.`)
+                    .setFooter({ text: `Your new balance is **${robber.balance} coins**.` });
 
                 interaction.editReply({ embeds: [embed] });
             }
