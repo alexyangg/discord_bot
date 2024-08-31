@@ -25,6 +25,23 @@ const userSchema = new Schema({
     type: Date,
     default: null,
   },
+  // inventory: [
+  //   {
+  //     itemName: { type: String, required: true },
+  //     quantity: { type: Number, default: 1 },
+  //     purchaseDate: { type: Date, default: Date.now },
+  //   }
+  // ],
+  inventory: {
+    type: [
+      {
+        itemName: { type: String, required: true },
+        quantity: { type: Number, default: 1 },
+        purchaseDate: { type: Date, default: Date.now },
+      }
+    ],
+    default: [],
+  },
 });
 
 module.exports = model('User', userSchema);
