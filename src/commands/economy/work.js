@@ -67,8 +67,7 @@ module.exports = {
             await user.save();
 
             embed.setTitle('Work Completed!')
-                .setDescription(randomMessage)
-                .setFooter({ text: `Your new balance is ${user.balance} coins.` });
+                .setDescription(`${randomMessage}\n\nYour new balance is **${user.balance} coins**.`);
 
             interaction.editReply({ embeds: [embed] });
 
