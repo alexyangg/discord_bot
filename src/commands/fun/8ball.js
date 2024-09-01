@@ -1,4 +1,4 @@
-const { Client, CommandInteraction, ApplicationCommandOptionType, Application } = require('discord.js');
+const { Client, CommandInteraction, ApplicationCommandOptionType, EmbedBuilder } = require('discord.js');
 
 module.exports = {
     name: '8ball',
@@ -45,6 +45,10 @@ module.exports = {
 
         const response = responses[Math.floor(Math.random() * responses.length)];
 
-        await interaction.reply(`> ${question}\n🎱 **${response}**`);
+        const embed = new EmbedBuilder()
+            .setColor('#ffffff')
+            .setDescription(`> ${question}\n🎱 **${response}**`);
+
+        await interaction.reply({ embeds: [embed] });
     }
 }

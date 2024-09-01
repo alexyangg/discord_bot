@@ -1,4 +1,4 @@
-const { Client, CommandInteraction } = require('discord.js');
+const { Client, CommandInteraction, EmbedBuilder } = require('discord.js');
 const axios = require('axios');
 
 module.exports = {
@@ -21,12 +21,12 @@ module.exports = {
                 });
             const dogImageUrl = response.data[0].url;
 
-            await interaction.reply(
-                {
-                    content: 'Here\'s a cute doggo for you!',
-                    files: [dogImageUrl]
-                }
-            );
+            const embed = new EmbedBuilder()
+                .setColor('#ffffff')
+                .setTitle("Here's a cute doggo for you!")
+                .setImage(dogImageUrl);
+
+            interaction.reply({ embeds: [embed] });
         } catch (error) {
             console.error(`Error fetching dog image: ${error}`);
             await interaction.reply(

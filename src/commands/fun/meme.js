@@ -1,4 +1,4 @@
-const { Client, CommandInteraction } = require('discord.js');
+const { Client, CommandInteraction, EmbedBuilder } = require('discord.js');
 const axios = require('axios');
 
 module.exports = {
@@ -14,19 +14,12 @@ module.exports = {
         try {
             // fetch image from Meme API
             const response = await axios.get('https://meme-api.com/gimme');
+            const embed = new EmbedBuilder()
+                .setColor('#ffffff')
+                .setTitle(response.data.title)
+                .setImage(response.data.url);
 
-            if (response.data) {
-                const meme = response.data;
-
-                await interaction.reply(
-                    {
-                        content: meme.title,
-                        files: [meme.url]
-                    }
-                );
-            } else {
-                await interaction.reply("Sorry, I couldn't fetch a meme right now. Please try again later.");
-            }
+            await interaction.reply({ embeds: [embed] });
         } catch (error) {
             console.log(`Error fetching meme: ${error}`);
             await interaction.reply(

@@ -1,4 +1,4 @@
-const { Client, Interaction, EmbedBuilder, ApplicationCommandType } = require('discord.js');
+const { Client, Interaction, EmbedBuilder } = require('discord.js');
 const axios = require('axios');
 
 module.exports = {
@@ -17,7 +17,7 @@ module.exports = {
             const joke = response.data;
 
             const embed = new EmbedBuilder()
-                .setDescription(`**${joke.setup}**\n\n${joke.punchline}`)
+                .setDescription(`${joke.setup}\n\n**${joke.punchline}**`)
                 .setColor('#ffffff');
 
             await interaction.reply({ embeds: [embed] });
