@@ -4,7 +4,7 @@ const AutoRole = require('../../models/AutoRole');
 const WelcomeChannel = require('../../models/WelcomeChannel');
 
 module.exports = {
-    name: 'view-settings',
+    name: 'settings',
     description: 'View the current settings for this server.',
 
     /**
@@ -89,7 +89,7 @@ module.exports = {
                 return;
             }
         } catch (error) {
-            console.log(`Error viewing settings: ${error}`);
+            console.log(`Error with /settings: ${error}`);
             interaction.editReply('There was an error retrieving the settings. Please try again.');
         }
     }
