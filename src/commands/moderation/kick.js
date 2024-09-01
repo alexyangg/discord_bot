@@ -1,4 +1,4 @@
-const { Client, Interaction, ApplicationCommandOptionType, PermissionFlagsBits, DiscordAPIError, } = require('discord.js');
+const { Client, Interaction, ApplicationCommandOptionType, PermissionFlagsBits, DiscordAPIError, EmbedBuilder } = require('discord.js');
 
 module.exports = {
     name: 'kick',
@@ -29,14 +29,12 @@ module.exports = {
         const targetUserId = interaction.options.get('target-user').value;
         const reason = interaction.options.get('reason')?.value || 'No reason provided.';
 
-        await interaction.deferReply();
-
         // Try to find if the targetUser is in the server
         try {
             const targetUser = await interaction.guild.members.fetch(targetUserId);
         } catch (error) {
             if (error instanceof DiscordAPIError && error.message.includes("Unknown Member")) {
-                await interaction.editReply("An error occurred when kicking: that user is not in this server.");
+                await interaction.reply({ content: "An error occurred when kicking: that user is not in this server.", ephemeral: true });
             } else {
                 console.log(`There was an error when kicking: ${error}`);
             }
@@ -45,12 +43,12 @@ module.exports = {
         const targetUser = await interaction.guild.members.fetch(targetUserId);
 
         if (!targetUser) {
-            await interaction.editReply("That user doesn't exist in this server.");
+            await interaction.reply({ content: "That user doesn't exist in this server.", ephemeral: true });
             return;
         }
 
         if (targetUser.id === interaction.guild.ownerId) {
-            await interaction.editReply("You can't kick the server owner.");
+            await interaction.reply({ content: "You can't kick the server owner.", ephemeral: true });
             return;
         }
 
@@ -59,27 +57,32 @@ module.exports = {
         const botRolePosition = interaction.guild.members.me.roles.highest.position; // Highest role of the bot
 
         if (targetUserRolePosition > requestUserRolePosition) {
-            await interaction.editReply("You can't kick that user because they have a higher role than you.");
+            await interaction.reply({ content: "You can't kick that user because they have a higher role than you.", ephemeral: true });
             return;
         }
         if (targetUserRolePosition === requestUserRolePosition) {
-            await interaction.editReply("You can't kick that user because they have the same role as you.");
-            return;
-        }
-        
-        if (targetUserRolePosition > botRolePosition) {
-            await interaction.editReply("I can't kick that user because they have a higher role than me.");
-            return;
-        }
-        if (targetUserRolePosition === botRolePosition) {
-            await interaction.editReply("I can't kick that user because they have the same role as me.");
+            await interaction.reply({ content: "You can't kick that user because they have the same role as you.", ephemeral: true });
             return;
         }
 
+        if (targetUserRolePosition > botRolePosition) {
+            await interaction.reply({ content: "I can't kick that user because they have a higher role than me.", ephemeral: true });
+            return;
+        }
+        if (targetUserRolePosition === botRolePosition) {
+            await interaction.reply({ content: "I can't kick that user because they have the same role as me.", ephemeral: true });
+            return;
+        }
+
+        await interaction.deferReply();
+
         // Kick the targetUser
         try {
+            const embed = new EmbedBuilder()
+                .setColor('#ffffff');
             await targetUser.kick({ reason });
-            await interaction.editReply(`User ${targetUser} was kicked.\nReason: ${reason}`);
+            embed.setDescription(`User ${targetUser} was kicked.\nReason: ${reason}`);
+            await interaction.editReply({ embeds: [embed] });
         } catch (error) {
             console.log(`There was an error when kicking: ${error}`);
         }

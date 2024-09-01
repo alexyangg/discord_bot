@@ -1,4 +1,4 @@
-const { Client, Interaction, ApplicationCommandOptionType, PermissionFlagsBits } = require('discord.js');
+const { Client, Interaction, ApplicationCommandOptionType, PermissionFlagsBits, EmbedBuilder } = require('discord.js');
 const ms = require('ms');
 
 module.exports = {
@@ -36,28 +36,31 @@ module.exports = {
         const duration = interaction.options.get('duration').value;
         const reason = interaction.options.get('reason')?.value || "No reason provided";
 
-        await interaction.deferReply();
-
         const targetUser = await interaction.guild.members.fetch(mentionable);
         if (!targetUser) {
-            await interaction.editReply("That user doesn't exist in this server.");
+            await interaction.reply({ content: "That user doesn't exist in this server.", ephemeral: true });
             return;
         }
 
         if (targetUser.user.bot) {
-            await interaction.editReply("I can't timeout a bot.");
+            await interaction.reply({ content: "I can't timeout a bot.", ephemeral: true });
+            return;
+        }
+
+        if (targetUser.permissions.has(PermissionFlagsBits.Administrator)) {
+            await interaction.reply({ content: "You cannot timeout an admin.", ephemeral: true });
             return;
         }
 
         const msDuration = ms(duration);
 
         if (isNaN(msDuration)) {
-            await interaction.editReply("Please provide a valid timeout duration.");
+            await interaction.reply({ content: "Please provide a valid timeout duration.", ephemeral: true });
             return;
         }
 
         if (msDuration < 5000 || msDuration > 2.419e9) {
-            await interaction.editReply("Timeout duration cannot be less than 5 seconds or more than 28 days.");
+            await interaction.reply({ content: "Timeout duration cannot be less than 5 seconds or more than 28 days.", ephemeral: true });
             return;
         }
 
@@ -66,35 +69,41 @@ module.exports = {
         const botRolePosition = interaction.guild.members.me.roles.highest.position; // Highest role of the bot
 
         if (targetUserRolePosition > requestUserRolePosition) {
-            await interaction.editReply("You can't timeout that user because they have a higher role than you.");
+            await interaction.reply({ content: "You can't timeout that user because they have a higher role than you.", ephemeral: true });
             return;
         }
         if (targetUserRolePosition === requestUserRolePosition) {
-            await interaction.editReply("You can't timeout that user because they have the same role as you.");
+            await interaction.reply({ content: "You can't timeout that user because they have the same role as you.", ephemeral: true });
             return;
         }
 
         if (targetUserRolePosition > botRolePosition) {
-            await interaction.editReply("I can't timeout that user because they have a higher role than me.");
+            await interaction.reply({ content: "I can't timeout that user because they have a higher role than me.", ephemeral: true });
             return;
         }
         if (targetUserRolePosition === botRolePosition) {
-            await interaction.editReply("I can't timeout that user because they have the same role as me.");
+            await interaction.reply({ content: "I can't timeout that user because they have the same role as me.", ephemeral: true });
             return;
         }
+
+        await interaction.deferReply();
 
         // timeout the user
         try {
             const { default: prettyMs } = await import('pretty-ms');
+            const embed = new EmbedBuilder()
+                .setColor('#ffffff');
 
             if (targetUser.isCommunicationDisabled()) {
                 await targetUser.timeout(msDuration, reason);
-                await interaction.editReply(`${targetUser}'s timeout has been updated to ${prettyMs(msDuration, { verbose: true })}.\nReason: ${reason}`);
+                embed.setDescription(`${targetUser}'s timeout has been updated to ${prettyMs(msDuration, { verbose: true })}.\nReason: ${reason}`);
+                await interaction.editReply({ embeds: [embed] });
                 return;
             }
 
             await targetUser.timeout(msDuration, reason);
-            await interaction.editReply(`${targetUser} was timed out for ${prettyMs(msDuration, { verbose: true })}.\nReason: ${reason}`);
+            embed.setDescription(`${targetUser} was timed out for ${prettyMs(msDuration, { verbose: true })}.\nReason: ${reason}`);
+            await interaction.editReply({ embeds: [embed] });
         } catch (error) {
             console.log(`There was an error when timing out: ${error}`);
         }

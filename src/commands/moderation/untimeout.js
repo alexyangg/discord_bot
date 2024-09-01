@@ -1,4 +1,4 @@
-const { Client, Interaction, ApplicationCommandOptionType, PermissionFlagsBits } = require('discord.js');
+const { Client, Interaction, ApplicationCommandOptionType, PermissionFlagsBits, EmbedBuilder } = require('discord.js');
 
 module.exports = {
     name: 'untimeout',
@@ -28,16 +28,14 @@ module.exports = {
         const mentionable = interaction.options.get('target-user').value;
         const reason = interaction.options.get('reason')?.value || "No reason provided";
 
-        await interaction.deferReply();
-
         const targetUser = await interaction.guild.members.fetch(mentionable);
         if (!targetUser) {
-            await interaction.editReply("That user doesn't exist in this server.");
+            await interaction.reply({ content: "That user doesn't exist in this server.", ephemeral: true });
             return;
         }
 
         if (targetUser.user.bot) {
-            await interaction.editReply("I can't remove a timeout from a bot.");
+            await interaction.reply({ content: "I can't remove a timeout from a bot.", ephemeral: true });
             return;
         }
 
@@ -46,32 +44,39 @@ module.exports = {
         const botRolePosition = interaction.guild.members.me.roles.highest.position; // Highest role of the bot
 
         if (targetUserRolePosition > requestUserRolePosition) {
-            await interaction.editReply("You can't remove a timeout from that user because they have a higher role than you.");
+            await interaction.reply({ content: "You can't remove a timeout from that user because they have a higher role than you.", ephemeral: true });
             return;
         }
         if (targetUserRolePosition === requestUserRolePosition) {
-            await interaction.editReply("You can't remove a timeout from that user because they have the same role as you.");
+            await interaction.reply({ content: "You can't remove a timeout from that user because they have the same role as you.", ephemeral: true });
             return;
         }
 
         if (targetUserRolePosition > botRolePosition) {
-            await interaction.editReply("I can't remove a timeout from that user because they have a higher role than me.");
+            await interaction.reply({ content: "I can't remove a timeout from that user because they have a higher role than me.", ephemeral: true });
             return;
         }
         if (targetUserRolePosition === botRolePosition) {
-            await interaction.editReply("I can't remove a timeout from that user because they have the same role as me.");
+            await interaction.reply({ content: "I can't remove a timeout from that user because they have the same role as me.", ephemeral: true });
             return;
         }
 
+        await interaction.deferReply();
+
         // remove the timeout from the user
         try {
+            const embed = new EmbedBuilder()
+                .setColor('#ffffff');
+
             if (!targetUser.isCommunicationDisabled()) {
-                await interaction.editReply(`${targetUser} is not currently timed out.`);
+                embed.setDescription(`${targetUser} is not currently timed out.`);
+                await interaction.editReply({ embeds: [embed] });
                 return;
             }
 
             await targetUser.timeout(null, reason);
-            await interaction.editReply(`${targetUser}'s timeout has been removed.\nReason: ${reason}`);
+            embed.setDescription(`${targetUser}'s timeout has been removed.\nReason: ${reason}`);
+            await interaction.editReply({ embeds: [embed] });
         } catch (error) {
             console.log(`There was an error when removing the time out: ${error}`);
         }

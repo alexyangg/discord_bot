@@ -1,4 +1,4 @@
-const { Client, Interaction, ApplicationCommandOptionType, PermissionFlagsBits, } = require('discord.js');
+const { Client, Interaction, ApplicationCommandOptionType, PermissionFlagsBits, EmbedBuilder } = require('discord.js');
 
 module.exports = {
     name: 'unban',
@@ -29,25 +29,29 @@ module.exports = {
         const targetUserId = interaction.options.get('target-user').value;
         const reason = interaction.options.get('reason')?.value || 'No reason provided.';
 
-        await interaction.deferReply();
-
         if (!interaction.member.permissions.has('BAN_MEMBERS')) {
-            await interaction.editReply('You do not have permission to unban members.');
+            await interaction.reply({ content: 'You do not have permission to unban members.', ephemeral: true });
             return;
         }
 
+        await interaction.deferReply();
+
         try {
+            const embed = new EmbedBuilder()
+                .setColor('#ffffff');
             const bannedUsers = await interaction.guild.bans.fetch();
             const banInfo = bannedUsers.find(ban => ban.user.id === targetUserId);
 
             if (!banInfo) {
-                await interaction.editReply(`User with ID ${targetUserId} is not banned.`);
+                embed.setDescription(`User with ID ${targetUserId} is not banned.`);
+                await interaction.editReply({ embeds: [embed] });
                 return;
             }
 
             // Unban the targetUser
             await interaction.guild.members.unban(targetUserId, reason);
-            await interaction.editReply(`Unbanned ${banInfo.user.tag}.\nReason: ${reason}`);
+            embed.setDescription(`Unbanned ${banInfo.user.tag}.\nReason: ${reason}`);
+            await interaction.editReply({ embeds: [embed] });
         } catch (error) {
             console.log(`There was an error when unbanning: ${error}`);
         }
