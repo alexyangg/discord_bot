@@ -3,9 +3,6 @@ const path = require('path');
 const areCommandsDifferent = require(path.resolve(__dirname, '../../utils/areCommandsDifferent'));
 const getApplicationCommands = require(path.resolve(__dirname, '../../utils/getApplicationCommands'));
 const getLocalCommands = require(path.resolve(__dirname, '../../utils/getLocalCommands'));
-const { REST, Routes } = require('discord.js');
-
-const rest = new REST().setToken(process.env.TOKEN);
 
 module.exports = async (client) => {
 
@@ -50,11 +47,6 @@ module.exports = async (client) => {
                     description,
                     options,
                 });
-
-                await rest.put(
-                    Routes.applicationCommands(clientId),
-                    { body: commands },
-                );
 
                 console.log(`Registered command "${name}".`);
                 
