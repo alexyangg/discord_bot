@@ -1,6 +1,7 @@
-const { Client, Interaction, GatewayIntentBits, EmbedBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle } = require('discord.js');
+const { Client, Interaction, EmbedBuilder } = require('discord.js');
 const path = require('path');
 const fs = require('fs');
+const createButtonRow = require('../../utils/createButtonRow');
 
 module.exports = {
     name: 'commands',
@@ -60,36 +61,9 @@ module.exports = {
             }
         }
 
-        // function to create the button row
-        const createButtonRow = () => {
-            return new ActionRowBuilder()
-                .addComponents(
-                    new ButtonBuilder()
-                        .setCustomId('first')
-                        .setStyle(ButtonStyle.Primary)
-                        .setEmoji('⏮️')
-                        .setDisabled(currentPage === 0),
-                    new ButtonBuilder()
-                        .setCustomId('previous')
-                        .setStyle(ButtonStyle.Primary)
-                        .setEmoji('⬅️')
-                        .setDisabled(currentPage === 0),
-                    new ButtonBuilder()
-                        .setCustomId('next')
-                        .setStyle(ButtonStyle.Primary)
-                        .setEmoji('➡️')
-                        .setDisabled(currentPage === pages.length - 1),
-                    new ButtonBuilder()
-                        .setCustomId('last')
-                        .setStyle(ButtonStyle.Primary)
-                        .setEmoji('⏭️')
-                        .setDisabled(currentPage === pages.length - 1),
-                );
-        };
-
         const message = await interaction.reply({
             embeds: [pages[currentPage]],
-            components: [createButtonRow()],
+            components: [createButtonRow(currentPage, pages)],
             fetchReply: true,
         });
 
@@ -115,11 +89,17 @@ module.exports = {
 
                 i.update({
                     embeds: [pages[currentPage]],
-                    components: [createButtonRow()],
+                    components: [createButtonRow(currentPage, pages)],
                 });
 
             } else {
-                i.reply({ content: `These buttons aren't for you!`, ephemeral: true });
+                const ephemeralEmbed = new EmbedBuilder()
+                    .setDescription(`This commands menu is controlled by <@${interaction.user.id}>. To use the buttons, you will have to run the command yourself.`)
+                    .setColor('#ffffff');
+                i.reply({
+                    embeds: [ephemeralEmbed],
+                    ephemeral: true
+                });
             }
         });
 

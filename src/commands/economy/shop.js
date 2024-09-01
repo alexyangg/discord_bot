@@ -1,5 +1,6 @@
-const { Client, Interaction, EmbedBuilder, ApplicationCommandOptionType, ActionRowBuilder, ButtonBuilder, ButtonStyle } = require('discord.js');
+const { Client, Interaction, EmbedBuilder, ApplicationCommandOptionType } = require('discord.js');
 const User = require('../../models/User');
+const createButtonRow = require('../../utils/createButtonRow');
 
 module.exports = {
     name: 'shop',
@@ -89,33 +90,11 @@ module.exports = {
                     return embed;
                 };
 
-                const createButtonRow = () => {
-                    return new ActionRowBuilder()
-                        .addComponents(
-                            new ButtonBuilder()
-                                .setCustomId('first')
-                                .setStyle(ButtonStyle.Primary)
-                                .setEmoji('⏮️')
-                                .setDisabled(currentPage === 0),
-                            new ButtonBuilder()
-                                .setCustomId('previous')
-                                .setStyle(ButtonStyle.Primary)
-                                .setEmoji('⬅️')
-                                .setDisabled(currentPage === 0),
-                            new ButtonBuilder()
-                                .setCustomId('next')
-                                .setStyle(ButtonStyle.Primary)
-                                .setEmoji('➡️')
-                                .setDisabled(currentPage === maxPages - 1),
-                            new ButtonBuilder()
-                                .setCustomId('last')
-                                .setStyle(ButtonStyle.Primary)
-                                .setEmoji('⏭️')
-                                .setDisabled(currentPage === maxPages - 1),
-                        );
-                };
-
-                const message = await interaction.reply({ embeds: [generateShopEmbed(currentPage)], components: [createButtonRow()], fetchReply: true });
+                const message = await interaction.reply({
+                    embeds: [generateShopEmbed(currentPage)],
+                    components: [createButtonRow(currentPage, maxPages)],
+                    fetchReply: true
+                });
 
                 const collector = message.createMessageComponentCollector();
 
@@ -139,11 +118,17 @@ module.exports = {
 
                         await i.update({
                             embeds: [generateShopEmbed(currentPage)],
-                            components: [createButtonRow()],
+                            components: [createButtonRow(currentPage, maxPages)],
                         });
 
                     } else {
-                        i.reply({ content: `These buttons aren't for you!`, ephemeral: true });
+                        const ephemeralEmbed = new EmbedBuilder()
+                            .setDescription(`This shop menu is controlled by <@${interaction.user.id}>. To use the buttons, you will have to run the command yourself.`)
+                            .setColor('#ffffff');
+                        i.reply({
+                            embeds: [ephemeralEmbed],
+                            ephemeral: true
+                        });
                     }
                 });
 
@@ -161,12 +146,12 @@ module.exports = {
                     console.log(user)
                     if (!user) {
                         user = new User({ userId, inventory: [] }); // Initialize inventory if user is new
-                      }
-                    
-                      // Check if inventory exists, initialize if not
-                      if (!user.inventory) {
+                    }
+
+                    // Check if inventory exists, initialize if not
+                    if (!user.inventory) {
                         user.inventory = [];
-                      }
+                    }
 
                     const itemIndex = user.inventory.findIndex(item => item.itemName === itemName);
 
