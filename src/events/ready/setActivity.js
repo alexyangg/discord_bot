@@ -1,3 +1,3 @@
 module.exports = (client) => {
-    client.user.setActivity({ name: "/commands" });
+    client.user.setActivity({ name: "/help | /commands" });
 }
