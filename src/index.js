@@ -16,17 +16,24 @@ const client = new Client({
     ],
 });
 
-(async () => {
+async function startBot() {
     try {
         keepAlive();
 
         await mongoose.connect(process.env.MONGODB_URI);
         console.log("Connected to DB.");
-    
+
         eventHandler(client);
-        
+
         client.login(process.env.TOKEN);
     } catch (error) {
         console.log(`Error: ${error}`);
+
+        if (error.code === 'ECONNRESET' || error.code === 'ETIMEDOUT' || error.message.includes('520')) {
+            console.log('Retrying to log in after a short delay...');
+            setTimeout(startBot, 10000);
+        }
     }
-})();
+}
+
+startBot();
