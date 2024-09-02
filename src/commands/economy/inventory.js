@@ -4,7 +4,7 @@ const createButtonRow = require('../../utils/createButtonRow');
 
 module.exports = {
     name: 'inventory',
-    description: 'View the itmes in your inventory.',
+    description: 'View the items in your inventory.',
     options: [
         {
             name: 'target-user',

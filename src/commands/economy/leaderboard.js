@@ -33,16 +33,17 @@ module.exports = {
 
         const topUsers = await Level.find({ guildId: interaction.guild.id })
             .select('-_id userId level xp')
+            .sort({ level: -1, xp: -1 })
             .limit(10)
             .catch((error) => console.log(error));
 
-        topUsers.sort((a, b) => {
-            if (a.level === b.level) {
-                return b.xp - a.xp;
-            } else {
-                return b.level - a.level;
-            }
-        });
+        // topUsers.sort((a, b) => {
+        //     if (a.level === b.level) {
+        //         return b.xp - a.xp;
+        //     } else {
+        //         return b.level - a.level;
+        //     }
+        // });
 
         // loop through the top users and fetch their data
         // returns an array of arrays
