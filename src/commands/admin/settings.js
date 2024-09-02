@@ -20,9 +20,9 @@ module.exports = {
 
         const guildId = interaction.guild.id;
 
-        try {
-            await interaction.deferReply();
+        await interaction.deferReply();
 
+        try {
             // return settings as plain JS object for easier property access
             let guildSettings = await GuildSettings.findOne({ guildId }).lean();
             let autoRoleSettings = await AutoRole.findOne({ guildId }).lean();

@@ -1,4 +1,4 @@
-const { Client, Interaction, PermissionFlagsBits, ApplicationCommandOptionType, ChannelType } = require('discord.js');
+const { Client, Interaction, PermissionFlagsBits, ApplicationCommandOptionType, ChannelType, EmbedBuilder } = require('discord.js');
 const WelcomeChannel = require('../../models/WelcomeChannel');
 const GuildSettings = require('../../models/GuildSettings');
 const AutoRole = require('../../models/AutoRole');
@@ -122,6 +122,8 @@ module.exports = {
         const subcommand = interaction.options.getSubcommand();
         const guildId = interaction.guild.id;
 
+        await interaction.deferReply();
+
         switch (subcommandGroup) {
             case 'welcome':
                 switch (subcommand) {
@@ -129,7 +131,7 @@ module.exports = {
                         try {
                             const targetChannel = interaction.options.getChannel('channel');
                             const customMessage = interaction.options.getString('custom-message');
-                            await interaction.deferReply();
+                            // await interaction.deferReply();
 
                             const existingWelcomeChannel = await WelcomeChannel.findOne({ guildId });
 
@@ -177,7 +179,7 @@ module.exports = {
 
                     case 'disable':
                         try {
-                            await interaction.deferReply();
+                            // await interaction.deferReply();
 
                             const query = {
                                 guildId: interaction.guildId,
@@ -206,7 +208,7 @@ module.exports = {
                         const targetRole = interaction.guild.roles.cache.get(targetRoleId);
 
                         try {
-                            await interaction.deferReply();
+                            // await interaction.deferReply();
 
                             let autoRole = await AutoRole.findOne({ guildId: interaction.guild.id });
 
@@ -236,7 +238,7 @@ module.exports = {
 
                     case 'disable':
                         try {
-                            await interaction.deferReply();
+                            // await interaction.deferReply();
 
                             if (!(await AutoRole.exists({ guildId: interaction.guild.id }))) {
                                 interaction.editReply('Autorole has not been configured for this server. Use `/configure autorole role` to set it up.');
@@ -256,7 +258,7 @@ module.exports = {
                 switch (subcommand) {
                     case 'enable':
                         try {
-                            await interaction.deferReply();
+                            // await interaction.deferReply();
 
                             let settings = await GuildSettings.findOne({ guildId });
                             if (!settings) {
@@ -277,7 +279,7 @@ module.exports = {
 
                     case 'disable':
                         try {
-                            await interaction.deferReply();
+                            // await interaction.deferReply();
 
                             let settings = await GuildSettings.findOne({ guildId });
                             if (!settings) {
@@ -340,7 +342,7 @@ module.exports = {
                     }
 
                     if (effectiveMinXp > effectiveMaxXp) {
-                        interaction.reply('The minimum XP must be less than the maximum XP. Please try again with different values.');
+                        interaction.editReply('The minimum XP must be less than the maximum XP. Please try again with different values.');
                         return;
                     }
 
@@ -364,26 +366,30 @@ module.exports = {
                     }
 
                     if (minXp < 0) {
-                        interaction.reply('Error updating settings: minimum-xp must be an integer greater than 0.');
+                        interaction.editReply('Error updating settings: \`minimum-xp\` must be an integer greater than 0.');
                         return;
                     }
 
                     if (maxXp < 0) {
-                        interaction.reply('Error updating settings: maximum-xp must be an integer greater than 0.');
+                        interaction.editReply('Error updating settings: \`maximum-xp\` must be an integer greater than 0.');
                         return;
                     }
 
                     if (xpCooldown < 0) {
-                        interaction.reply('Error updating settings: xp-cooldown must be an integer greater than 0.');
+                        interaction.editReply('Error updating settings: \`xp-cooldown\` must be an integer greater than 0.');
                         return;
                     }
 
+                    const embed = new EmbedBuilder()
+                        .setColor('#ffffff')
+                        .setDescription(`XP settings updated:\nMin XP: ${previousMinXp} XP => **${minXp}** XP\nMax XP: ${previousMaxXp} XP => **${maxXp}** XP\nCooldown: ${previousXpCooldown}ms => **${xpCooldown}**ms`);
+
                     await settings.save();
-                    interaction.reply(`XP settings updated:\nMin XP: ${previousMinXp} XP => **${minXp}** XP\nMax XP: ${previousMaxXp} XP => **${maxXp}** XP\nCooldown: ${previousXpCooldown}ms => **${xpCooldown}**ms`);
+                    interaction.editReply({ embeds: [embed] });
 
                 } catch (error) {
                     console.log(`Error with /configure xp-settings: ${error}`);
-                    interaction.reply('There was an error updating the XP settings. Please try again.');
+                    interaction.editReply('There was an error updating the XP settings. Please try again.');
                 }
                 break;
         }

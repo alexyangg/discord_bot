@@ -94,7 +94,7 @@ module.exports = {
                 await robber.save();
 
                 embed.setTitle('Robbery Failed...')
-                    .setDescription(`You were caught! You lost **${penalty} coins** as a penalty.\n\nYour new balance is **${robber.balance} coins**.`);
+                    .setDescription(`You were caught trying to rob <@${targetId}>! You lost **${penalty} coins** as a penalty.\n\nYour new balance is **${robber.balance} coins**.`);
 
                 interaction.editReply({ embeds: [embed] });
             }
