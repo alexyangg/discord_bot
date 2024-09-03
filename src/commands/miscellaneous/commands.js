@@ -103,10 +103,9 @@ module.exports = {
             }
         });
 
-        collector.on('end', collected => {
-            message.edit({
-                components: []
-            });
+        collector.on('end', async () => {
+            await interaction.editReply({ components: [] });
         });
+
     }
 };
