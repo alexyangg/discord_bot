@@ -309,10 +309,10 @@ module.exports = {
                     if (!settings) {
                         settings = new GuildSettings({
                             guildId,
-                            levelUpMessageEnabled,
-                            minXpAmount,
-                            maxXpAmount,
-                            xpCooldown,
+                            // levelUpMessageEnabled,
+                            // minXpAmount,
+                            // maxXpAmount,
+                            // xpCooldown,
                         });
                     }
 

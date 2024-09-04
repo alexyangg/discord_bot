@@ -30,10 +30,10 @@ module.exports = async (client, message) => {
     try {
         const level = await Level.findOne(query);
         const settings = await GuildSettings.findOne({ guildId: message.guild.id });
-        const levelUpMessageEnabled = settings?.levelUpMessageEnabled || true;
-        const minXpAmount = settings?.minXpAmount || 5;
-        const maxXpAmount = settings?.maxXpAmount || 15;
-        const xpCooldown = settings?.xpCooldown || 5000;
+        const levelUpMessageEnabled = settings?.levelUpMessageEnabled ?? true;
+        const minXpAmount = settings?.minXpAmount ?? 5;
+        const maxXpAmount = settings?.maxXpAmount ?? 15;
+        const xpCooldown = settings?.xpCooldown ?? 5000;
 
         const xpToGive = getRandomXp(minXpAmount, maxXpAmount);
 
@@ -59,7 +59,7 @@ module.exports = async (client, message) => {
             cooldowns.add(message.author.id);
             setTimeout(() => {
                 cooldowns.delete(message.author.id);
-            }, 5000);
+            }, xpCooldown);
 
         } else { // User does not have a level saved in database, so create a level
             const newLevel = new Level({
