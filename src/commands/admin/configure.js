@@ -122,6 +122,9 @@ module.exports = {
         const subcommand = interaction.options.getSubcommand();
         const guildId = interaction.guild.id;
 
+        const embed = new EmbedBuilder()
+            .setColor('#ffffff');
+
         await interaction.deferReply();
 
         switch (subcommandGroup) {
@@ -136,7 +139,8 @@ module.exports = {
                             const existingWelcomeChannel = await WelcomeChannel.findOne({ guildId });
 
                             if (existingWelcomeChannel) {
-                                interaction.followUp(`A welcome channel is already configured for this server: <#${existingWelcomeChannel.channelId}>. To change channels, first run \`/configure welcome disable\` and then \`/configure welcome channel\`.`);
+                                embed.setDescription(`A welcome channel is already configured for this server: <#${existingWelcomeChannel.channelId}>. To change channels, first run \`/configure welcome disable\` and then \`/configure welcome channel\`.`);
+                                interaction.editReply({ embeds: [embed] });
                                 return;
                             }
 
@@ -144,13 +148,6 @@ module.exports = {
                                 guildId: interaction.guildId,
                                 channelId: targetChannel.id,
                             };
-
-                            const channelExistsInDb = await WelcomeChannel.exists(query);
-
-                            if (channelExistsInDb) {
-                                interaction.followUp(`This channel has already been configured for welcome messages. To change the welcome message, first run \`/configure welcome disable\` and then \`/configure welcome channel\`.`);
-                                return;
-                            }
 
                             const newWelcomeChannel = new WelcomeChannel({
                                 ...query,
@@ -161,19 +158,24 @@ module.exports = {
                                 .save()
                                 .then(() => {
                                     if (!(customMessage === null)) {
-                                        interaction.followUp(`Configured ${targetChannel} to receive \`${customMessage}\` as a welcome message.`);
+                                        embed.setDescription(`Configured ${targetChannel} to receive \`${customMessage}\` as a welcome message.`);
+                                        interaction.editReply({ embeds: [embed] });
                                     } else {
-                                        interaction.followUp(`Configured ${targetChannel} to receive the default welcome message: \`Hey {username}👋. Welcome to {server-name}!\``);
+                                        embed.setDescription(`Configured ${targetChannel} to receive the default welcome message: \`Hey {username}👋. Welcome to {server-name}!\``);
+                                        interaction.editReply({ embeds: [embed] });
                                     }
 
                                 })
                                 .catch((error) => {
-                                    interaction.followUp('Database error. Please try again in a moment.');
+                                    embed.setDescription('Database error. Please try again in a moment.');
+                                    interaction.followUp({ embeds: [embed] });
                                     console.log(`DB error in ${__filename}:\n`, error);
                                 });
 
                         } catch (error) {
                             console.log(`Error in /configure welcome channel: ${error}`);
+                            embed.setDescription(`There was an error configuring the welcome channel. Please try again later.`);
+                            interaction.editReply({ embeds: [embed] });
                         }
                         break;
 
@@ -187,15 +189,19 @@ module.exports = {
 
                             WelcomeChannel.findOneAndDelete(query)
                                 .then(() => {
-                                    interaction.followUp(`Disabled welcome messages.`);
+                                    embed.setDescription('Disabled welcome messages.');
+                                    interaction.editReply({ embeds: [embed] });
                                 })
                                 .catch((error) => {
-                                    interaction.followUp('Database error. Please try again in a moment.');
+                                    embed.setDescription('Database error. Please try again in a moment.');
+                                    interaction.editReply({ embeds: [embed] });
                                     console.log(`DB error in ${__filename}:\n`, error);
                                 });
 
                         } catch (error) {
                             console.error(`Error in /configure welcome disable: ${error}`);
+                            embed.setDescription(`There was an error disabling welcome messages. Please try again later.`);
+                            interaction.editReply({ embeds: [embed] });
                         }
                         break;
                 }
@@ -215,12 +221,14 @@ module.exports = {
                             // check if autoRole exists in the database
                             if (autoRole) {
                                 if (autoRole.roleId === targetRoleId) {
-                                    interaction.editReply(`Autorole has already been configured for \`@${targetRole.name}\`. To disable, run \`/configure autorole disable\`, or change the role by running \`/configure autorole role\` again.`);
+                                    embed.setDescription(`Autorole has already been configured for \`@${targetRole.name}\`. To disable, run \`/configure autorole disable\`, or change the role by running \`/configure autorole role\` again.`);
+                                    interaction.editReply({ embeds: [embed] });
                                     return;
                                 } else {
                                     autoRole.roleId = targetRoleId;
                                     await autoRole.save();
-                                    interaction.editReply(`Autorole has been updated to \`@${targetRole.name}\`.`);
+                                    embed.setDescription(`Autorole has been updated to \`@${targetRole.name}\`.`);
+                                    interaction.editReply({ embeds: [embed] });
                                     return;
                                 }
                             } else {
@@ -229,10 +237,13 @@ module.exports = {
                                     roleId: targetRoleId,
                                 });
                                 await autoRole.save();
-                                interaction.editReply(`Autorole has now been configured to \`@${targetRole.name}\`. To disable, run \`/configure autorole disable\`.`);
+                                embed.setDescription(`Autorole has now been configured to \`@${targetRole.name}\`. To disable, run \`/configure autorole disable\`.`);
+                                interaction.editReply({ embeds: [embed] });
                             }
                         } catch (error) {
                             console.log(`An error occurred with /configure autorole role: ${error}`);
+                            embed.setDescription(`There was an error configuring autorole. Please try again later.`);
+                            interaction.editReply({ embeds: [embed] });
                         }
                         break;
 
@@ -241,14 +252,18 @@ module.exports = {
                             // await interaction.deferReply();
 
                             if (!(await AutoRole.exists({ guildId: interaction.guild.id }))) {
-                                interaction.editReply('Autorole has not been configured for this server. Use `/configure autorole role` to set it up.');
+                                embed.setDescription('Autorole has not been configured for this server. Use `/configure autorole role` to set it up.');
+                                interaction.editReply({ embeds: [embed] });
                                 return;
                             }
 
                             await AutoRole.findOneAndDelete({ guildId: interaction.guild.id });
-                            interaction.editReply('Autorole has been disabled for this server. Use `/configure autorole role` to set it up again.');
+                            embed.setDescription('Autorole has been disabled for this server. Use `/configure autorole role` to set it up again.');
+                            interaction.editReply({ embeds: [embed] });
                         } catch (error) {
                             console.log(`An error occurred with /configure autorole disable: ${error}`);
+                            embed.setDescription(`There was an error disabling autorole. Please try again later.`);
+                            interaction.editReply({ embeds: [embed] });
                         }
                         break;
                 }
@@ -265,15 +280,19 @@ module.exports = {
                                 settings = new GuildSettings({ guildId, levelUpMessageEnabled: true });
                             } else {
                                 if (settings.levelUpMessageEnabled) {
-                                    await interaction.editReply(`Leveling-up messages are already enabled. To disable, use \`/configure level-messages disable\`.`);
+                                    embed.setDescription(`Leveling-up messages are already enabled. To disable, use \`/configure level-messages disable\`.`);
+                                    await interaction.editReply({ embeds: [embed] });
                                     return;
                                 }
                                 settings.levelUpMessageEnabled = true;
                             }
                             await settings.save();
-                            await interaction.editReply(`Leveling-up messages are now enabled.`);
+                            embed.setDescription(`Leveling-up messages are now enabled.`);
+                            await interaction.editReply({ embeds: [embed] });
                         } catch (error) {
                             console.error(`Error with /configure level-messages enable: ${error}`);
+                            embed.setDescription(`There was an error enabling level-up messages. Please try again later.`);
+                            interaction.editReply({ embeds: [embed] });
                         }
                         break;
 
@@ -286,15 +305,19 @@ module.exports = {
                                 settings = new GuildSettings({ guildId, levelUpMessageEnabled: false });
                             } else {
                                 if (!settings.levelUpMessageEnabled) {
-                                    await interaction.editReply(`Leveling-up messages are already disabled. To enable, use \`/configure level-messages enable\`.`);
+                                    embed.setDescription(`Leveling-up messages are already disabled. To enable, use \`/configure level-messages enable\`.`);
+                                    await interaction.editReply({ embeds: [embed] });
                                     return;
                                 }
                                 settings.levelUpMessageEnabled = false;
                             }
                             await settings.save();
-                            await interaction.editReply(`Leveling-up messages are now disabled.`);
+                            embed.setDescription(`Leveling-up messages are now disabled.`);
+                            await interaction.editReply({ embeds: [embed] });
                         } catch (error) {
                             console.error(`Error with /configure level-messages disable: ${error}`);
+                            embed.setDescription(`There was an error disabling level-up messages. Please try again later.`);
+                            interaction.editReply({ embeds: [embed] });
                         }
                         break;
                 }
@@ -342,7 +365,8 @@ module.exports = {
                     }
 
                     if (effectiveMinXp > effectiveMaxXp) {
-                        interaction.editReply('The minimum XP must be less than the maximum XP. Please try again with different values.');
+                        embed.setDescription('The minimum XP must be less than the maximum XP. Please try again with different values.');
+                        interaction.editReply({ embeds: [embed] });
                         return;
                     }
 
@@ -366,30 +390,32 @@ module.exports = {
                     }
 
                     if (minXp < 0) {
-                        interaction.editReply('Error updating settings: \`minimum-xp\` must be an integer greater than 0.');
+                        embed.setDescription('Error updating settings: \`minimum-xp\` must be an integer greater than 0.');
+                        interaction.editReply({ embeds: [embed] });
                         return;
                     }
 
                     if (maxXp < 0) {
-                        interaction.editReply('Error updating settings: \`maximum-xp\` must be an integer greater than 0.');
+                        embed.setDescription('Error updating settings: \`maximum-xp\` must be an integer greater than 0.');
+                        interaction.editReply({ embeds: [embed] });
                         return;
                     }
 
                     if (xpCooldown < 0) {
-                        interaction.editReply('Error updating settings: \`xp-cooldown\` must be an integer greater than 0.');
+                        embed.setDescription('Error updating settings: \`xp-cooldown\` must be an integer greater than 0.');
+                        interaction.editReply({ embeds: [embed] });
                         return;
                     }
 
-                    const embed = new EmbedBuilder()
-                        .setColor('#ffffff')
-                        .setDescription(`XP settings updated:\nMin XP: ${previousMinXp} XP => **${minXp}** XP\nMax XP: ${previousMaxXp} XP => **${maxXp}** XP\nCooldown: ${previousXpCooldown}ms => **${xpCooldown}**ms`);
+                    embed.setDescription(`XP settings updated:\nMin XP: ${previousMinXp} XP => **${minXp}** XP\nMax XP: ${previousMaxXp} XP => **${maxXp}** XP\nCooldown: ${previousXpCooldown}ms => **${xpCooldown}**ms`);
 
                     await settings.save();
                     interaction.editReply({ embeds: [embed] });
 
                 } catch (error) {
                     console.log(`Error with /configure xp-settings: ${error}`);
-                    interaction.editReply('There was an error updating the XP settings. Please try again.');
+                    embed.setDescription('There was an error updating the XP settings. Please try again.');
+                    interaction.editReply({ embeds: [embed] });
                 }
                 break;
         }
