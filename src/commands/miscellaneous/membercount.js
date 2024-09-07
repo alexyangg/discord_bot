@@ -22,13 +22,10 @@ module.exports = {
      * @param {Interaction} interaction 
      */
     callback: async (client, interaction) => {
-
+        const currentTime = new Date().toLocaleTimeString();
         const isGlobal = interaction.options.get('global')?.value;
         const embed = new EmbedBuilder()
             .setColor('#ffffff');
-
-            console.log(devIds)
-            console.log(interaction.user.id)
 
         if (!isGlobal) {
             const memberCount = interaction.guild.memberCount;
@@ -49,6 +46,7 @@ module.exports = {
                 const globalServerCount = await getAllServers(client);
 
                 embed.setDescription(`Total users using bot: ${globalMemberCount}\nTotal servers bot is in: ${globalServerCount}`);
+                embed.setFooter({ text: `Current time: ${currentTime}` });
                 interaction.reply({ embeds: [embed], ephemeral: true });
             }
         }
