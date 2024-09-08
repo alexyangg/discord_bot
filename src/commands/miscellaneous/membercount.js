@@ -22,7 +22,9 @@ module.exports = {
      * @param {Interaction} interaction 
      */
     callback: async (client, interaction) => {
-        const currentTime = new Date().toLocaleTimeString();
+        //const currentTime = new Date().toLocaleTimeString();
+        const options = { timeZone: 'America/Vancouver', hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: true };
+        const currentTime = new Intl.DateTimeFormat('en-US', options).format(new Date());
         const isGlobal = interaction.options.get('global')?.value;
         const embed = new EmbedBuilder()
             .setColor('#ffffff');
