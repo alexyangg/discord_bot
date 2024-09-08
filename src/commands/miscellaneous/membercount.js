@@ -49,7 +49,7 @@ module.exports = {
 
                 embed.setDescription(`Total users using bot: ${globalMemberCount}\nTotal servers bot is in: ${globalServerCount}`);
                 embed.setFooter({ text: `Current time: ${currentTime}` });
-                interaction.reply({ embeds: [embed], ephemeral: true });
+                interaction.reply({ embeds: [embed] });
             }
         }
     },
