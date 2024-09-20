@@ -1,6 +1,6 @@
 require('dotenv').config();
 
-const { Client, IntentsBitField } = require('discord.js');
+const { Client, IntentsBitField, ActivityType } = require('discord.js');
 const path = require('path');
 const eventHandler = require(path.resolve(__dirname, './handlers/eventHandler'));
 const keepAlive = require(path.resolve(__dirname, './keepAlive.js'));
@@ -14,6 +14,13 @@ const client = new Client({
         IntentsBitField.Flags.GuildPresences,
         IntentsBitField.Flags.MessageContent,
     ],
+    presence: {
+        activities: [{
+            name: '/help | /commands',
+            type: ActivityType.Listening
+        }],
+        status: 'online'
+    }
 });
 
 async function startBot() {
